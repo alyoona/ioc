@@ -1,0 +1,10 @@
+<beans>
+    <bean id="spamService" class="com.stroganova.ioc.service.SpamService">
+        <property name="spamCount" value="5"/>
+        <property name="mailService" ref="firstMailService"/>
+    </bean>
+    <bean id="firstMailService" class="com.stroganova.ioc.service.MailService">
+    </bean>
+    <bean id="secondMailService" class="com.stroganova.ioc.service.MailService">
+    </bean>
+</beans>
