@@ -61,8 +61,8 @@ public class BeanProcessorTest {
         expectedBeans.put("secondMailService", beanSecondMailService);
         expectedBeans.put("spamService", beanSpamService);
         //when
-        BeanProcessor beanProcessor = new BeanProcessor();
-        beanProcessor.process(beanDefinitionsList);
+        BeanProcessor beanProcessor = new BeanProcessor(beanDefinitionsList);
+
 
         Map<String, Bean> actualBeans = beanProcessor.getBeans();
 
@@ -73,11 +73,11 @@ public class BeanProcessorTest {
             assertEquals("Value mismatch for key '" + key + "';", expectedBeans.get(key), actualBeans.get(key));
         });
 
-        Map<Class, Integer> mapCount = beanProcessor.getBeansCountByType();
+        Map<Class<?>, Integer> mapCount = beanProcessor.getBeansCountByType();
         assertEquals(Integer.valueOf(2), mapCount.get(MailService.class));
         assertEquals(Integer.valueOf(1), mapCount.get(SpamService.class));
 
-        Map<Class, String> mapByType = beanProcessor.getBeansIdByType();
+        Map<Class<?>, String> mapByType = beanProcessor.getBeansIdByType();
         assertEquals(null, mapByType.get(MailService.class));
         assertEquals("spamService", mapByType.get(SpamService.class));
 

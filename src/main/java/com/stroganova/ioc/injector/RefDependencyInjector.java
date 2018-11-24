@@ -11,7 +11,7 @@ import java.util.Set;
 public class RefDependencyInjector extends Injector {
 
     public void inject(Bean bean, Map<String, String> refDependencies, Map<String, Bean> beans) {
-        Class clazz = bean.getValue().getClass();
+        Class<?> clazz = bean.getValue().getClass();
         Set<Map.Entry<String, String>> entries = refDependencies.entrySet();
         for (Map.Entry<String, String> entry : entries) {
             String propertyName = entry.getKey();
@@ -30,5 +30,4 @@ public class RefDependencyInjector extends Injector {
             }
         }
     }
-
 }

@@ -17,8 +17,7 @@ public class ClassPathApplicationContextTest {
 
     @Before
     public void before() {
-        context = new ClassPathApplicationContext("src/main/resources/context.xml");
-
+        context = new ClassPathApplicationContext("src/test/resources/context.xml");
     }
 
     @Test
@@ -49,7 +48,7 @@ public class ClassPathApplicationContextTest {
         expectedBeanNames.add("secondMailService");
         expectedBeanNames.add("spamService");
         expectedBeanNames.add("firstMailService");
-        assertEquals(actualBeanNames, expectedBeanNames);
+        assertEquals(expectedBeanNames, actualBeanNames );
     }
 
     @Test(expected = NoUniqueBeanException.class)

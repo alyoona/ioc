@@ -12,7 +12,7 @@ import java.util.Set;
 public class DependencyInjector extends Injector {
 
     public void inject(Bean bean, Map<String, String> dependencies) {
-        Class clazz = bean.getValue().getClass();
+        Class<?> clazz = bean.getValue().getClass();
         Set<Map.Entry<String, String>> entries = dependencies.entrySet();
         for (Map.Entry<String, String> entry : entries) {
             String propertyName = entry.getKey();
