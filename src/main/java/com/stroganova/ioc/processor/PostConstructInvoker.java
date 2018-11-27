@@ -10,7 +10,7 @@ public class PostConstructInvoker implements Invoker {
 
     private List<Bean> beans;
 
-    public PostConstructInvoker(List<Bean>  beans) {
+    public PostConstructInvoker(List<Bean> beans) {
         this.beans = beans;
     }
 
@@ -22,11 +22,11 @@ public class PostConstructInvoker implements Invoker {
             Class<?> clazz = object.getClass();
             try {
                 Method[] methods = clazz.getDeclaredMethods();
-                for(Method method : methods) {
-                    if("init".equals(method.getName())) {
-                        if (method.getDeclaredAnnotation(PostConstruct.class) != null) {
-                            method.invoke(object);
-                        }
+                for (Method method : methods) {
+                    if (method.getDeclaredAnnotation(PostConstruct.class) != null) {
+                        method.setAccessible(true);
+                        method.invoke(object);
+                        method.setAccessible(false);
                     }
                 }
             } catch (Exception e) {

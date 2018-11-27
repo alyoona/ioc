@@ -1,6 +1,7 @@
 package com.stroganova.ioc.processor;
 
 import com.stroganova.ioc.entity.BeanDefinition;
+import com.stroganova.ioc.entity.BeanType;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -36,11 +37,11 @@ public class BeanDefinitionProcessorTest {
 
         BeanDefinitionProcessor beanDefinitionProcessor = new BeanDefinitionProcessor(allBeanDefinitions);
 
-        Map<String, List<BeanDefinition>> map = beanDefinitionProcessor.getAllBeanDefinitionsMap();
+        Map<BeanType, List<BeanDefinition>> map = beanDefinitionProcessor.getAllBeanDefinitionsMap();
 
-        List<BeanDefinition> beanDefinitionsProcessed = map.get("beanDefinitions");
-        List<BeanDefinition> beanBFPPDefinitionsProcessed = map.get("beanFactoryPostProcessorDefinitions");
-        List<BeanDefinition> beanBPPDefinitionsProcessed = map.get("beanPostProcessorDefinitions");
+        List<BeanDefinition> beanDefinitionsProcessed = map.get(BeanType.BUSINESS);
+        List<BeanDefinition> beanBFPPDefinitionsProcessed = map.get(BeanType.BEAN_FACTORY_POST_PROCESSOR);
+        List<BeanDefinition> beanBPPDefinitionsProcessed = map.get(BeanType.BEAN_POST_PROCESSOR);
 
         assertEquals(beanDefinitions, beanDefinitionsProcessed);
         assertEquals(beanBFPPDefinitions, beanBFPPDefinitionsProcessed);

@@ -3,6 +3,7 @@ package com.stroganova.ioc.context;
 import com.stroganova.ioc.entity.Bean;
 import com.stroganova.ioc.entity.BeanDefinition;
 import com.stroganova.ioc.entity.BeanStatus;
+import com.stroganova.ioc.entity.BeanType;
 import com.stroganova.ioc.exception.NoUniqueBeanException;
 import com.stroganova.ioc.exception.NotFoundBeanException;
 import com.stroganova.ioc.injector.DependencyInjector;
@@ -17,14 +18,14 @@ import java.util.*;
 public class ClassPathApplicationContext implements ApplicationContext {
 
     private String[] paths;
-    private Map<String, List<BeanDefinition>> allBeanDefinitions;
+    private Map<BeanType, List<BeanDefinition>> allBeanDefinitions;
 
     private Map<String, Bean> beans;
     private Map<Class<?>, String> beansIdByType;
     private Map<Class<?>, Integer> beansCountByType;
-    private List<Bean> beansList;
-    private List<Bean> systemBeansFactoryPostProcessor;
-    private List<Bean> systemBeansPostProcessor;
+    private List<Bean> businessBeans;
+    private List<Bean> beansFactoryPostProcessorSystemBeans;
+    private List<Bean> beansPostProcessorSystemBeans;
 
     public ClassPathApplicationContext(String... paths) {
         this.paths = paths;
@@ -38,7 +39,7 @@ public class ClassPathApplicationContext implements ApplicationContext {
 
     private void init() {
         /*1. read bean definitions*/
-        readBeabDefinitions();
+        readBeanDefinitions();
 
         /*1.1 BeanFactoryPostProcessor*/
         createSystemBeansOfBeanFactoryPostProcessor();
@@ -64,13 +65,11 @@ public class ClassPathApplicationContext implements ApplicationContext {
 
         /*7. BeanPostProcessor postProcessAfterInitialization*/
         callPostProcessAfterInitialization();
-
-
     }
 
     /*1. read bean definitions*/
 
-    private void readBeabDefinitions() {
+    private void readBeanDefinitions() {
         BeanDefinitionReader reader = new XMLBeanDefinionReader();
         List<BeanDefinition> beanDefinitionsList = new ArrayList<>();
         for (String path : paths) {
@@ -84,28 +83,28 @@ public class ClassPathApplicationContext implements ApplicationContext {
 
     /*1.1 BeanFactoryPostProcessor*/
     private void createSystemBeansOfBeanFactoryPostProcessor() {
-        BeanProcessor beanProcessor = new BeanProcessor(allBeanDefinitions.get("beanFactoryPostProcessorDefinitions"));
-        systemBeansFactoryPostProcessor = beanProcessor.getBeansList();
+        BeanProcessor beanProcessor = new BeanProcessor(allBeanDefinitions.get(BeanType.BEAN_FACTORY_POST_PROCESSOR));
+        beansFactoryPostProcessorSystemBeans = beanProcessor.getBeansList();
     }
 
     private void callPostProcessBeanFactory() {
-        Invoker invoker = new PostProcessBeanFactoryInvoker(systemBeansFactoryPostProcessor, allBeanDefinitions.get("beanDefinitions"));
+        Invoker invoker = new PostProcessBeanFactoryInvoker(beansFactoryPostProcessorSystemBeans, allBeanDefinitions.get(BeanType.BUSINESS));
         invoker.invoke();
     }
 
     /*2. construct beans from bean definitions (empty objects created with newInstance)*/
     private void createBeansFromBeanDefinitions() {
-        BeanProcessor beanProcessor = new BeanProcessor(allBeanDefinitions.get("beanDefinitions"));
+        BeanProcessor beanProcessor = new BeanProcessor(allBeanDefinitions.get(BeanType.BUSINESS));
         beans = beanProcessor.getBeans();
         beansIdByType = beanProcessor.getBeansIdByType();
         beansCountByType = beanProcessor.getBeansCountByType();
-        beansList = beanProcessor.getBeansList();
+        businessBeans = beanProcessor.getBeansList();
     }
 
     /*3. injectValueDependencies -> inject primitives and strings*/
     private void injectDependencies() {
         DependencyInjector dependencyInjector = new DependencyInjector();
-        for (BeanDefinition beanDefinition : allBeanDefinitions.get("beanDefinitions")) {
+        for (BeanDefinition beanDefinition : allBeanDefinitions.get(BeanType.BUSINESS)) {
             Map<String, String> dependencies = beanDefinition.getDependencies();
             if (dependencies != null) {
                 String id = beanDefinition.getId();
@@ -118,7 +117,7 @@ public class ClassPathApplicationContext implements ApplicationContext {
     /*4. injectRefDependencies -> inject refs to beans*/
     private void injectRefDependencies() {
         RefDependencyInjector refDependencyInjector = new RefDependencyInjector();
-        for (BeanDefinition beanDefinition : allBeanDefinitions.get("beanDefinitions")) {
+        for (BeanDefinition beanDefinition : allBeanDefinitions.get(BeanType.BUSINESS)) {
             Map<String, String> refDependencies = beanDefinition.getRefDendencies();
             if (refDependencies != null) {
                 String id = beanDefinition.getId();
@@ -130,25 +129,25 @@ public class ClassPathApplicationContext implements ApplicationContext {
 
     /*5. BeanPostProcessor */
     private void createSystemBeansOfBeanPostProcessor() {
-        BeanProcessor beanProcessor = new BeanProcessor(allBeanDefinitions.get("beanPostProcessorDefinitions"));
-        systemBeansPostProcessor = beanProcessor.getBeansList();
+        BeanProcessor beanProcessor = new BeanProcessor(allBeanDefinitions.get(BeanType.BEAN_POST_PROCESSOR));
+        beansPostProcessorSystemBeans = beanProcessor.getBeansList();
     }
 
     /*5.1 BeanPostProcessor postProcessBeforeInitialization*/
     private void callPostProcessBeforeInitialization() {
-        Invoker invoker = new PostProcessInvoker(systemBeansPostProcessor, beansList, "postProcessBeforeInitialization");
+        Invoker invoker = new PostProcessBeforeInvoker(beansPostProcessorSystemBeans, businessBeans);
         invoker.invoke();
     }
 
     /*6. call init method(@PostProcess)*/
     private void callInitMethodOfBeansAnnotatedByPostProcess() {
-        Invoker invoker = new PostConstructInvoker(beansList);
+        Invoker invoker = new PostConstructInvoker(businessBeans);
         invoker.invoke();
     }
 
     /*7. BeanPostProcessor postProcessAfterInitialization*/
     private void callPostProcessAfterInitialization() {
-        Invoker invoker = new PostProcessInvoker(systemBeansPostProcessor, beansList, "postProcessAfterInitialization");
+        Invoker invoker = new PostProcessAfterInvoker(beansPostProcessorSystemBeans, businessBeans);
         invoker.invoke();
     }
 

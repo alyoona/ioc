@@ -3,6 +3,7 @@ package com.stroganova.ioc.processor;
 import com.stroganova.ioc.entity.BeanDefinition;
 import com.stroganova.ioc.entity.BeanFactoryPostProcessor;
 import com.stroganova.ioc.entity.BeanPostProcessor;
+import com.stroganova.ioc.entity.BeanType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ public class BeanDefinitionProcessor {
 
     private List<BeanDefinition> allBeanDefinitions;
 
-    private Map<String, List<BeanDefinition>> allBeanDefinitionsMap = new HashMap<>();
+    private Map<BeanType, List<BeanDefinition>> allBeanDefinitionsMap = new HashMap<>();
 
     public BeanDefinitionProcessor(List<BeanDefinition> allBeanDefinitions) {
         this.allBeanDefinitions = allBeanDefinitions;
@@ -47,13 +48,13 @@ public class BeanDefinitionProcessor {
             }
         }
 
-        allBeanDefinitionsMap.put("beanDefinitions", beanDefinitions);
-        allBeanDefinitionsMap.put("beanFactoryPostProcessorDefinitions", beanFactoryPostProcessorDefinitions);
-        allBeanDefinitionsMap.put("beanPostProcessorDefinitions", beanPostProcessorDefinitions);
+        allBeanDefinitionsMap.put(BeanType.BUSINESS, beanDefinitions);
+        allBeanDefinitionsMap.put(BeanType.BEAN_FACTORY_POST_PROCESSOR, beanFactoryPostProcessorDefinitions);
+        allBeanDefinitionsMap.put(BeanType.BEAN_POST_PROCESSOR, beanPostProcessorDefinitions);
 
     }
 
-    public Map<String, List<BeanDefinition>> getAllBeanDefinitionsMap() {
+    public Map<BeanType, List<BeanDefinition>> getAllBeanDefinitionsMap() {
         return allBeanDefinitionsMap;
     }
 }

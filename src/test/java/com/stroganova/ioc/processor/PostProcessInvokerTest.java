@@ -33,7 +33,7 @@ public class PostProcessInvokerTest {
 
     @Test
     public void invokeBefore() throws Exception {
-        PostProcessInvoker invoker = new PostProcessInvoker(systemBeans, beans, "postProcessBeforeInitialization");
+        Invoker invoker = new PostProcessBeforeInvoker(systemBeans, beans);
         invoker.invoke();
 
         Bean bean = beans.get(0);
@@ -43,7 +43,7 @@ public class PostProcessInvokerTest {
 
     @Test
     public void invokeAfter() throws Exception {
-        PostProcessInvoker invoker = new PostProcessInvoker(systemBeans, beans, "postProcessAfterInitialization");
+        Invoker invoker = new PostProcessAfterInvoker(systemBeans, beans);
         invoker.invoke();
 
         Bean bean = beans.get(0);

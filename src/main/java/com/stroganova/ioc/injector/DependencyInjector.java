@@ -35,23 +35,22 @@ public class DependencyInjector extends Injector {
 
     private Object getArg(String value, Class<?> parameterType) {
         if (parameterType.isPrimitive()) {
-            String typeName = parameterType.getTypeName();
             Object arg = null;
-            if ("byte".equals(typeName)) {
+            if (byte.class == parameterType) {
                 arg = Byte.valueOf(value);
-            } else if ("short".equals(typeName)) {
+            } else if (short.class == parameterType) {
                 arg = Short.valueOf(value);
-            } else if ("int".equals(typeName)) {
+            } else if (int.class == parameterType) {
                 arg = Integer.valueOf(value);
-            } else if ("long".equals(typeName)) {
+            } else if (long.class == parameterType) {
                 arg = Long.valueOf(value);
-            } else if ("float".equals(typeName)) {
+            } else if (float.class == parameterType) {
                 arg = Float.valueOf(value);
-            } else if ("double".equals(typeName)) {
+            } else if (double.class == parameterType) {
                 arg = Double.valueOf(value);
-            } else if ("char".equals(typeName)) {
+            } else if (char.class == parameterType) {
                 arg = value.charAt(0);
-            } else if ("boolean".equals(typeName)) {
+            } else if (boolean.class == parameterType) {
                 arg = Boolean.valueOf(value);
             }
             return arg;
